@@ -43,14 +43,19 @@ expenses_tracker/
 │   │   ├── categoryRouter.js
 │   │   └── transactionRouter.js
 │   ├── utils/            # Helper functions
-│   └── app.js            # Express app setup
+│   ├── .env              # Environment variables (not in git)
+│   ├── .env.example      # Environment variables template
+│   ├── app.js            # Express app setup
+│   └── package.json      # Backend dependencies
 │
 ├── frontend/
 │   ├── src/              # React source files
 │   ├── public/           # Static assets
+│   ├── package.json      # Frontend dependencies
 │   └── vite.config.js    # Vite configuration
 │
-└── package.json          # Root dependencies
+├── .gitignore            # Git ignore rules
+└── README.md             # Project documentation
 ```
 
 ## Prerequisites
@@ -67,18 +72,13 @@ git clone <repository-url>
 cd expenses_tracker
 ```
 
-2. Install root dependencies:
-```bash
-npm install
-```
-
-3. Install backend dependencies:
+2. Install backend dependencies:
 ```bash
 cd backend
 npm install
 ```
 
-4. Install frontend dependencies:
+3. Install frontend dependencies:
 ```bash
 cd ../frontend
 npm install
@@ -88,16 +88,25 @@ npm install
 
 ### Backend Setup
 
-1. Create a `.env` file in the `backend` directory
-2. Add the following environment variables:
+1. Copy the example environment file:
+```bash
+cd backend
+cp .env.example .env
+```
+
+2. Edit `.env` and update the following variables:
 
 ```env
 PORT=8000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
+MONGODB_URI=your_mongodb_connection_string_here
+JWT_SECRET=your_secure_jwt_secret_key_here
+FRONTEND_URL=http://localhost:5173
 ```
 
-**Note:** Update the MongoDB connection string in `backend/app.js` or move it to environment variables for better security.
+**Important:**
+- Replace `MONGODB_URI` with your actual MongoDB connection string
+- Generate a strong, random string for `JWT_SECRET` (you can use: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+- Update `FRONTEND_URL` if your frontend runs on a different port
 
 ### Frontend Setup
 
@@ -161,9 +170,11 @@ npm run preview
 
 ## Security Notes
 
-- The MongoDB credentials are currently hardcoded in `backend/app.js`. For production, move these to environment variables.
-- Update CORS settings in production to restrict allowed origins.
-- Keep your JWT secret secure and use a strong random string.
+- **Never commit the `.env` file** to version control. It contains sensitive credentials.
+- The `.env.example` file is safe to commit as it contains no actual credentials.
+- In production, update CORS settings to restrict allowed origins to your actual frontend domain.
+- Use a strong, randomly generated JWT secret (minimum 32 characters).
+- Consider using environment-specific `.env` files (`.env.development`, `.env.production`) for different environments.
 
 ## License
 

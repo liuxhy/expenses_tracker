@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,18 +8,15 @@ const categoryRouter = require("./routes/categoryRouter");
 const transactionRouter = require("./routes/transactionRouter");
 const app = express();
 
-//xinhuiyuliu
-//ilouaIqKOiTTsH2C
-//mongodb+srv://xinhuiyuliu:ilouaIqKOiTTsH2C@cluster0.1k5gfua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 //!Connect to mongodb
 mongoose
-  .connect("mongodb+srv://xinhuiyuliu:ilouaIqKOiTTsH2C@cluster0.1k5gfua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("DB Connected"))
   .catch((e) => console.log(e));
 
 //! Cors config
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [process.env.FRONTEND_URL || "http://localhost:5173"],
 };
 app.use(cors(corsOptions));
 //!Middlewares
