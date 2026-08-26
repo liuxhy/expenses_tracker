@@ -63,6 +63,12 @@ const transactionController = {
       //update
       const updatedTransaction = await transaction.save();
       res.json(updatedTransaction);
+    } else if (!transaction) {
+      res.status(404);
+      throw new Error("Transaction not found");
+    } else if (transaction.user.toString() !== req.user.toString()) {
+      res.status(403);
+      throw new Error("Not authorized");
     }
   }),
   //! delete
@@ -72,6 +78,12 @@ const transactionController = {
     if (transaction && transaction.user.toString() === req.user.toString()) {
       await Transaction.findByIdAndDelete(req.params.id);
       res.json({ message: "Transaction removed" });
+    } else if (!transaction) {
+      res.status(404);
+      throw new Error("Transaction not found");
+    } else if (transaction.user.toString() !== req.user.toString()) {
+      res.status(403);
+      throw new Error("Not authorized");
     }
   }),
 };
