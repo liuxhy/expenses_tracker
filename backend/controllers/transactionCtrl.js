@@ -16,6 +16,7 @@ const transactionController = {
       category,
       amount,
       description,
+      date,
     });
     res.status(201).json(transaction);
   }),
@@ -53,12 +54,12 @@ const transactionController = {
     //! Find the transaction
     const transaction = await Transaction.findById(req.params.id);
     if (transaction && transaction.user.toString() === req.user.toString()) {
-      (transaction.type = req.body.type || transaction.type),
+      ((transaction.type = req.body.type || transaction.type),
         (transaction.category = req.body.category || transaction.category),
         (transaction.amount = req.body.amount || transaction.amount),
         (transaction.date = req.body.date || transaction.date),
         (transaction.description =
-          req.body.description || transaction.description);
+          req.body.description || transaction.description));
       //update
       const updatedTransaction = await transaction.save();
       res.json(updatedTransaction);
