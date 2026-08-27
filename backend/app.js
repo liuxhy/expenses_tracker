@@ -12,7 +12,10 @@ const app = express();
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("DB Connected"))
-  .catch((e) => console.log(e));
+  .catch((e) => {
+    console.error("DB connection failed:", e.message);
+    process.exit(1);
+  });
 
 //! Cors config
 const corsOptions = {
@@ -31,5 +34,5 @@ app.use(errorHandler);
 //!Start the server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () =>
-  console.log(`Server is running on this port... ${PORT} `)
+  console.log(`Server is running on this port... ${PORT} `),
 );

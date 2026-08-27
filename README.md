@@ -113,7 +113,18 @@ FRONTEND_URL=http://localhost:5173
 ```
 
 **Important:**
-- `MONGODB_URI` — your actual MongoDB connection string.
+- `MONGODB_URI` — your actual MongoDB connection string, copied from
+  Atlas (Cluster → Connect → Drivers → Node.js). Replace `<db_password>`
+  with the database user's password, angle brackets included. URL-encode
+  any special characters in it (`@` → `%40`, `/` → `%2F`, and so on).
+
+  **Note on the database name.** If the connection string ends with
+  `.mongodb.net/?...` — no name between the `/` and the `?` — Mongoose
+  connects to the default database, which is called `test`. That is where
+  this project's data currently lives. Inserting a name there
+  (`.mongodb.net/expenses_tracker?...`) silently points the app at a
+  different, empty database, and existing users and transactions appear to
+  vanish. Only change it if you intend to start from an empty database.
 - `JWT_SECRET` — used to sign and verify auth tokens. Generate a strong random value:
   ```bash
   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -123,16 +134,32 @@ FRONTEND_URL=http://localhost:5173
 
 ### Frontend Setup
 
-No environment file is needed. The API base URL is currently hard-coded in
-`frontend/src/utils/url.js`:
-
-```js
-export const BASE_URL = "http://localhost:8000/api/v1";
+1. Copy the example environment file:
+```bash
+cd frontend
+cp .env.example .env
 ```
 
-If the backend runs somewhere else, edit that file. (Moving this to a
-`VITE_API_URL` environment variable is a worthwhile improvement, but it is
-not implemented yet.)
+2. Edit `.env` if the backend runs somewhere other than the default:
+
+```env
+VITE_API_URL=http://localhost:8000
+```
+
+**Important:**
+- Give the backend **origin only** — no trailing slash and no `/api/v1`
+  suffix. `frontend/src/utils/url.js` appends `/api/v1` itself.
+- Only variables prefixed with `VITE_` are exposed to the browser, and
+  everything exposed that way ends up readable in the built bundle. Never
+  put a secret here; an API origin is public information and is fine.
+- If `VITE_API_URL` is unset, the code falls back to
+  `http://localhost:8000`.
+- **Vite reads `.env` only at startup.** After editing it, stop the dev
+  server and run `npm run dev` again — hot reload will not pick up the
+  change.
+- The value is substituted at build time, not read at runtime, so a
+  production bundle is tied to whatever origin was set when it was built.
+  Different environments need separate builds.
 
 ## Running the Application
 
@@ -145,12 +172,29 @@ node app.js
 ```
 The backend runs on `http://localhost:8000`. (There is no `npm start` script defined.)
 
+The server **exits immediately if it cannot reach MongoDB**, printing
+`DB connection failed: <reason>`. That is intentional — a server that
+accepts requests it cannot serve is harder to debug than one that refuses
+to start. If this happens, check `MONGODB_URI` in `backend/.env` and make
+sure your current IP is allowed under Atlas → Network Access.
+
+Opening `http://localhost:8000/` in a browser shows `Cannot GET /`. This is
+expected: the backend is a JSON API with no route at `/`. To confirm it is
+alive, request a real endpoint — `GET /api/v1/users/profile` without a
+token returns a JSON error, which means routing and middleware are working.
+
 2. In a new terminal, start the frontend dev server:
 ```bash
 cd frontend
 npm run dev
 ```
 The frontend runs on `http://localhost:5173`.
+
+Check the port Vite actually prints. If 5173 is already taken it silently
+falls back to 5174, which no longer matches `FRONTEND_URL` in the backend's
+`.env`, and every request is then blocked by CORS. Either free port 5173
+(`lsof -ti:5173 | xargs kill`) or update `FRONTEND_URL` and restart the
+backend.
 
 ### Production Build
 
