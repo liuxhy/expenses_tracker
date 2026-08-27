@@ -23,36 +23,39 @@ export const addTransactionAPI = async ({
       headers: {
         Authorization: `Bearer ${getUserFromStorage()}`,
       },
-    }
+    },
   );
   //Return a promise
   return response.data;
 };
 //! update
-export const updateCategoryAPI = async ({ name, type, id }) => {
+export const updateTransactionAPI = async ({
+  id,
+  type,
+  category,
+  date,
+  description,
+  amount,
+}) => {
   const response = await axios.put(
-    `${BASE_URL}/categories/update/${id}`,
-    {
-      name,
-      type,
-    },
+    `${BASE_URL}/transactions/update/${id}`,
+    { type, category, date, description, amount },
     {
       headers: {
         Authorization: `Bearer ${getUserFromStorage()}`,
       },
-    }
+    },
   );
-  //Return a promise
   return response.data;
 };
+
 //! delete
-export const deleteCategoryAPI = async (id) => {
-  const response = await axios.delete(`${BASE_URL}/categories/delete/${id}`, {
+export const deleteTransactionAPI = async (id) => {
+  const response = await axios.delete(`${BASE_URL}/transactions/delete/${id}`, {
     headers: {
       Authorization: `Bearer ${getUserFromStorage()}`,
     },
   });
-  //Return a promise
   return response.data;
 };
 //! lists
