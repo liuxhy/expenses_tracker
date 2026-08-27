@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FaTrash, FaEdit } from "react-icons/fa";
 
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { listTransactionsAPI } from "../../services/transactions/transactionService";
+import {
+  listTransactionsAPI,
+  deleteTransactionAPI,
+} from "../../services/transactions/transactionService";
 import { listCategoriesAPI } from "../../services/category/categoryService";
 
 const TransactionList = () => {
@@ -41,6 +44,28 @@ const TransactionList = () => {
     queryFn: () => listTransactionsAPI(filters),
     queryKey: ["list-transactions", filters],
   });
+
+  //! Query client for cache invalidation
+  const queryClient = useQueryClient();
+
+  //! Delete mutation
+  const {
+    mutateAsync: deleteTransaction,
+    isPending: isDeleting,
+    error: deleteError,
+  } = useMutation({
+    mutationFn: deleteTransactionAPI,
+    mutationKey: ["delete-transaction"],
+  });
+
+  //! Delete handler
+  const handleDelete = (id) => {
+    deleteTransaction(id)
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ["list-transactions"] });
+      })
+      .catch((e) => console.log(e));
+  };
 
   return (
     <div className="my-4 p-4 shadow-lg rounded-lg bg-white">
