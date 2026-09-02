@@ -68,7 +68,11 @@ const LoginForm = () => {
       {/* Display messages */}
       {isPending && <AlertMessage type="loading" message="Login you in...." />}
       {isError && (
-        <AlertMessage type="error" message={error.response.data.message} />
+        <AlertMessage type="error" message={
+            error?.response?.data?.message ||
+            error?.message ||
+            "Something went wrong"
+          } />
       )}
       {isSuccess && <AlertMessage type="success" message="Login success" />}
       <p className="text-sm text-center text-gray-500">

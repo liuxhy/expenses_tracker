@@ -66,7 +66,11 @@ const RegistrationForm = () => {
       {/* Display messages */}
       {isPending && <AlertMessage type="loading" message="Loading...." />}
       {isError && (
-        <AlertMessage type="error" message={error.response.data.message} />
+        <AlertMessage type="error" message={
+            error?.response?.data?.message ||
+            error?.message ||
+            "Something went wrong"
+          } />
       )}
       {isSuccess && (
         <AlertMessage type="success" message="Registration success" />

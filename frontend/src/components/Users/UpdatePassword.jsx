@@ -53,7 +53,11 @@ const UpdatePassword = () => {
           </label>
           {isPending && <AlertMessage type="loading" message="Updating...." />}
           {isError && (
-            <AlertMessage type="error" message={error.response.data.message} />
+            <AlertMessage type="error" message={
+            error?.response?.data?.message ||
+            error?.message ||
+            "Something went wrong"
+          } />
           )}
           {isSuccess && (
             <AlertMessage
