@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import {
@@ -148,7 +148,7 @@ const TransactionList = () => {
                       transaction.type.slice(1)}
                   </span>
                   <span className="ml-2 text-gray-800">
-                    {transaction.category?.name} - $
+                    {transaction.category} - $
                     {transaction.amount.toLocaleString()}
                   </span>
                   <span className="text-sm text-gray-600 italic ml-2">
@@ -156,12 +156,6 @@ const TransactionList = () => {
                   </span>
                 </div>
                 <div className="flex space-x-3">
-                  <button
-                    onClick={() => handleUpdateTransaction(transaction._id)}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <FaEdit />
-                  </button>
                   <button
                     onClick={() => handleDelete(transaction._id)}
                     className="text-red-500 hover:text-red-700"
